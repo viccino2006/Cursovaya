@@ -61,9 +61,42 @@ def p_body(doc: Document, text: str, *, indent: float = 1.25, align=WD_ALIGN_PAR
     p.alignment = align
     p.paragraph_format.line_spacing = line_spacing
     p.paragraph_format.first_line_indent = Cm(indent) if indent else None
+    p.paragraph_format.space_after = Pt(0)
+    p.paragraph_format.space_before = Pt(0)
     run = p.add_run(text)
     run.font.name = "Times New Roman"
     run.font.size = Pt(14)
+
+
+def add_md_table(doc: Document, lines: list) -> None:
+    """Преобразует markdown-таблицу (список строк) в Word-таблицу."""
+    rows = []
+    for ln in lines:
+        if re.match(r"\s*\|[-\s|]+\|\s*$", ln):
+            continue
+        cells = [c.strip() for c in ln.strip().strip("|").split("|")]
+        rows.append(cells)
+    if not rows:
+        return
+    ncols = max(len(r) for r in rows)
+    table = doc.add_table(rows=len(rows), cols=ncols)
+    table.style = "Table Grid"
+    table.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    for ri, row in enumerate(rows):
+        for ci in range(ncols):
+            cell = table.cell(ri, ci)
+            text = row[ci] if ci < len(row) else ""
+            cell.text = ""
+            p = cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            p.paragraph_format.line_spacing = 1.0
+            p.paragraph_format.first_line_indent = Cm(0)
+            p.paragraph_format.space_after = Pt(0)
+            run = p.add_run(text)
+            run.font.name = "Times New Roman"
+            run.font.size = Pt(12)
+            if ri == 0:
+                run.bold = True
 
 
 def p_subheading(doc: Document, text: str) -> None:
@@ -194,6 +227,17 @@ def build_toc(doc: Document) -> None:
 # -----------------------------------------------------------------------------
 # Универсальный набор главы из файла
 # -----------------------------------------------------------------------------
+def render_block(doc: Document, fname: str) -> None:
+    """Читает файл с контентом; выводит текст и markdown-таблицы как Word-таблицы."""
+    for para in read_block(fname):
+        lines = para.splitlines()
+        # таблица: все строки начинаются с «|»
+        if all(l.lstrip().startswith("|") for l in lines) and len(lines) >= 2:
+            add_md_table(doc, lines)
+        else:
+            p_body(doc, para)
+
+
 def build_section(doc: Document, *, header_lines: list, subsections: list) -> None:
     """
     header_lines  — список строк заголовка главы (центрируются 1.5 межстр.).
@@ -201,18 +245,15 @@ def build_section(doc: Document, *, header_lines: list, subsections: list) -> No
     """
     for line in header_lines:
         p_title(doc, line, line_spacing=1.5, bold=True)
-    p_body(doc, "")  # пустая строка между заголовком и текстом
 
     for title, fname in subsections:
         p_subheading(doc, title)
-        for para in read_block(fname):
-            p_body(doc, para)
+        render_block(doc, fname)
 
 
 def build_intro(doc: Document) -> None:
     p_title(doc, "ВВЕДЕНИЕ", line_spacing=1.5, bold=True)
-    for para in read_block("intro.txt"):
-        p_body(doc, para)
+    render_block(doc, "intro.txt")
     page_break(doc)
 
 
@@ -311,8 +352,7 @@ def build_chapter5(doc: Document) -> None:
 
 def build_conclusion(doc: Document) -> None:
     p_title(doc, "ЗАКЛЮЧЕНИЕ", line_spacing=1.5, bold=True)
-    for para in read_block("conclusion.txt"):
-        p_body(doc, para)
+    render_block(doc, "conclusion.txt")
     page_break(doc)
 
 

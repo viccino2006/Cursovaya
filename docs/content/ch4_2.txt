@@ -1,15 +1,15 @@
-Криптографические операции на стороне устройства реализованы в модуле crypto_stb.c как обёртки над bee2. Bee2 встроена в проект как git-подмодуль firmware/bee2 с собственной системой сборки CMake. В образ прошивки включены модули bee2: belt, belt-hash, bign, gf2, ec, ecp. Полный объём занимаемой Flash — около 22 КБ; SRAM — до 4 КБ при выполнении bignSign2.
+Криптографические операции на стороне устройства реализованы в модуле crypto_stb.c как обёртки над bee2. Bee2 встроена в проект как git-подмодуль firmware/bee2. В образ прошивки включены модули bee2: belt, belt-hash, bign, gf2, ec, ecp. Объём занимаемой Flash — около 22 КБ; SRAM — до 4 КБ при выполнении bignSign2.
 
-Команда CMD_SIGN. Вход — 32 байта хэша. Реализация: загрузка закрытого ключа из Flash (key_storage_load); если отсутствует — ERR_NO_KEY. Заполнение параметров кривой bign-curve256v1 (bignParamsStd("1.2.112.0.2.0.34.101.45.3.1")). Подпись детерминированная — bignSign2 с принимаемой солью из строки «STB1». Возврат 48 байт.
+CMD_SIGN. Вход — 32 байта хэша. Реализация: key_storage_load загружает закрытый ключ; если отсутствует — ERR_NO_KEY. bignParamsStd("1.2.112.0.2.0.34.101.45.3.1") заполняет параметры кривой bign-curve256v1. bignSign2 формирует детерминированную подпись с солью «STB1». Возврат 48 байт.
 
-Команда CMD_VERIFY. Вход 32+48+64 байт (digest, sig, pubkey). Реализация: bignValPubkey проверяет корректность точки публичного ключа; bignVerify проверяет подпись. ERR_OK или ERR_BAD_SIG в ответе.
+CMD_VERIFY. Вход 32+48+64 байт. bignValPubkey проверяет корректность точки публичного ключа; bignVerify — подпись. ERR_OK или ERR_BAD_SIG.
 
-Команда CMD_HASH. Вход — произвольная длина (до USB_PROTO_MAX_PAYLOAD = 2048 байт). Реализация: beltHashStart, beltHashStepH, beltHashStepG. Возврат 32 байта.
+CMD_HASH. Вход — произвольная длина до 2048 байт. beltHashStart, beltHashStepH, beltHashStepG. Возврат 32 байта.
 
-Команды CMD_ENCRYPT/CMD_DECRYPT. Вход 16+32+N байт (IV, key, data). N кратно 16 (фрагменты подаются с ПК после PKCS#7-паддинга). Реализация: beltCBCStart, beltCBCStepE/StepD, beltCBCStepG (генерация MAC опционально не применяется). Возврат N байт.
+CMD_ENCRYPT/CMD_DECRYPT. Вход 16+32+N байт. N кратно 16 (PKCS#7-паддинг на ПК). beltCBCStart, beltCBCStepE/StepD. Возврат N байт.
 
-Команда CMD_GEN_KEYPAIR. Реализация: rng_collect формирует 64 байта энтропии из UID, SysTick, DWT.CYCCNT, АЦП (датчик температуры); bignParamsStd + bignGenKeypair вырабатывают пару ключей; key_storage_save записывает в Flash. Возврат 64 байт нового публичного ключа.
+CMD_GEN_KEYPAIR. rng_collect формирует 64 байта энтропии из UID, SysTick, DWT.CYCCNT, АЦП; bignGenKeypair вырабатывает пару ключей; key_storage_save записывает в Flash. Возврат 64 байт нового публичного ключа.
 
-Команда CMD_GET_PUBKEY. Возвращает публичный ключ из Flash или ERR_NO_KEY.
+CMD_GET_PUBKEY. Возвращает публичный ключ из Flash или ERR_NO_KEY.
 
-Тесты по векторам СТБ 34.101.31-2020 А.1, А.23-1/2/3 (belt-hash) и собственным векторам RFC 4493 (belt-MAC) проходят бит-в-бит. Векторы bign из приложения А СТБ 34.101.45-2020 также воспроизводятся.
+Тесты по векторам СТБ 34.101.31-2020 А.1, А.23-1/2/3 (belt-hash) и СТБ 34.101.45-2020 приложение А (bign) проходят бит-в-бит.
