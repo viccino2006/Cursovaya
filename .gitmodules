@@ -1,0 +1,3 @@
+[submodule "firmware/bee2"]
+	path = firmware/bee2
+	url = https://github.com/agievich/bee2.git

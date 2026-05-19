@@ -1,0 +1,49 @@
+СТБ 34.101.31-2020. Информационные технологии и безопасность. Криптографические алгоритмы шифрования и контроля целостности. — Введ. 2020-04-01. — Минск: Госстандарт, 2020. — 31 с.
+
+СТБ 34.101.45-2020. Информационные технологии и безопасность. Алгоритмы электронной цифровой подписи и транспорта ключа на основе эллиптических кривых. — Введ. 2020-04-01. — Минск: Госстандарт, 2020. — 38 с.
+
+СТБ 34.101.47-2017. Информационные технологии и безопасность. Криптографические алгоритмы генерации псевдослучайных чисел. — Введ. 2017-08-01. — Минск: Госстандарт, 2017. — 14 с.
+
+СТБ 34.101.66-2014. Информационные технологии и безопасность. Протоколы выработки общего ключа. — Введ. 2015-01-01. — Минск: Госстандарт, 2014. — 22 с.
+
+СТБ 34.101.78-2019. Информационные технологии и безопасность. Программно-аппаратные средства защиты информации. — Минск: Госстандарт, 2019. — 26 с.
+
+Закон Республики Беларусь от 10.11.2008 № 455-З «Об информации, информатизации и защите информации».
+
+Закон Республики Беларусь от 28.12.2009 № 113-З «Об электронном документе и электронной цифровой подписи».
+
+Указ Президента Республики Беларусь от 16.04.2013 № 196 «О некоторых мерах по совершенствованию защиты информации».
+
+Агиевич С. В. Криптографические алгоритмы СТБ 34.101.31 // Журн. БГУ. Математика. Информатика. — 2018. — № 2. — С. 64–76.
+
+Bee2: a cryptographic library implementing Belarusian cryptographic standards [Электронный ресурс]. — Режим доступа: https://github.com/agievich/bee2. — Дата доступа: 15.05.2026.
+
+Агиевич С. В., Соловьёв А. А. Стандарт СТБ 34.101.45-2013: спецификация эллиптических кривых и алгоритмов на их основе. — Минск: ОИПИ НАН Беларуси, 2014. — 32 с.
+
+STMicroelectronics. STM32F103x8/B Datasheet. — Doc ID 13587 Rev 18. — Geneva: STMicroelectronics, 2024. — 117 p.
+
+STMicroelectronics. RM0008 STM32F101xx, STM32F102xx, STM32F103xx, STM32F105xx and STM32F107xx Reference Manual. — Doc ID 13902 Rev 21. — Geneva: STMicroelectronics, 2021. — 1135 p.
+
+STMicroelectronics. UM1734 STM32Cube USB device library. — Doc ID DM00108129 Rev 6. — Geneva: STMicroelectronics, 2019. — 113 p.
+
+USB Implementers Forum. Universal Serial Bus Class Definitions for Communications Devices. — Rev. 1.2 errata. — Beaverton, OR: USB-IF, 2012. — 75 p.
+
+Universal Serial Bus 2.0 Specification [Электронный ресурс]. — Режим доступа: https://www.usb.org/document-library/usb-20-specification. — Дата доступа: 15.05.2026.
+
+NIST SP 800-57 Part 1 Rev. 5. Recommendation for Key Management. — Gaithersburg, MD: NIST, 2020. — 171 p.
+
+ENISA. Algorithms, key size and parameters report — 2014. — Heraklion: ENISA, 2014. — 96 p.
+
+ISO/IEC 27000:2018. Information technology — Security techniques — Information security management systems — Overview and vocabulary. — Geneva: ISO, 2018. — 27 p.
+
+Schneier B. Applied Cryptography: Protocols, Algorithms and Source Code in C. — 2nd ed. — New York: John Wiley & Sons, 1996. — 758 p.
+
+Menezes A., van Oorschot P., Vanstone S. Handbook of Applied Cryptography. — Boca Raton: CRC Press, 1996. — 780 p.
+
+Hankerson D., Menezes A., Vanstone S. Guide to Elliptic Curve Cryptography. — New York: Springer, 2004. — 311 p.
+
+Pollard J. M. Monte Carlo methods for index computation (mod p) // Mathematics of Computation. — 1978. — Vol. 32, no. 143. — P. 918–924.
+
+Bernstein D. J., Lange T. SafeCurves: choosing safe curves for elliptic-curve cryptography [Электронный ресурс]. — Режим доступа: https://safecurves.cr.yp.to. — Дата доступа: 15.05.2026.
+
+Дятчик В. А. Программно-аппаратный комплекс криптографических преобразований информации по СТБ с USB-интерфейсом [Электронный ресурс]: исходные коды. — Режим доступа: https://github.com/viccino2006/Cursovaya. — Дата доступа: 17.05.2026.
