@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "stm32f1xx_hal.h"
 #include "bee2/crypto/belt.h"

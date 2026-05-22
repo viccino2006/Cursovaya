@@ -20,10 +20,12 @@
 #include "usb_device.h"
 #include "usbd_cdc_if.h"
 #include "adc.h"          /* CubeMX-генерируемый заголовок MX_ADC1_Init */
+#include "gpio.h"         /* CubeMX-генерируемый заголовок MX_GPIO_Init */
 #include "crypto_stb.h"
 #include "usb_protocol.h"
 
 #include <string.h>
+#include <stdbool.h>
 
 #define RX_RING_SIZE 4096u
 #define TX_BUF_SIZE  2300u

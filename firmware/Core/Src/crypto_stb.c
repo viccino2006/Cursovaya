@@ -13,6 +13,7 @@
 #include "bee2/crypto/bign.h"
 
 #include <string.h>
+#include <stdbool.h>
 
 /* Реализован в rng_stm32.c: потоковый источник энтропии. */
 extern void stm32_rng_step(void *buf, size_t n, void *state);
