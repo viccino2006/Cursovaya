@@ -47,8 +47,7 @@ int crypto_cbc_encrypt(const uint8_t key[CRYPTO_KEY_LEN], const uint8_t iv[CRYPT
     if (len == 0u || (len % CRYPTO_BLOCK_LEN) != 0u) {
         return -1;
     }
-    memmove(out_data, in_data, len);
-    return (beltCBCEncr(out_data, len, key, CRYPTO_KEY_LEN, iv) == ERR_OK) ? 0 : -2;
+    return (beltCBCEncr(out_data, in_data, len, key, CRYPTO_KEY_LEN, iv) == ERR_OK) ? 0 : -2;
 }
 
 int crypto_cbc_decrypt(const uint8_t key[CRYPTO_KEY_LEN], const uint8_t iv[CRYPTO_BLOCK_LEN],
@@ -57,8 +56,7 @@ int crypto_cbc_decrypt(const uint8_t key[CRYPTO_KEY_LEN], const uint8_t iv[CRYPT
     if (len == 0u || (len % CRYPTO_BLOCK_LEN) != 0u) {
         return -1;
     }
-    memmove(out_data, in_data, len);
-    return (beltCBCDecr(out_data, len, key, CRYPTO_KEY_LEN, iv) == ERR_OK) ? 0 : -2;
+    return (beltCBCDecr(out_data, in_data, len, key, CRYPTO_KEY_LEN, iv) == ERR_OK) ? 0 : -2;
 }
 
 /* Идентификатор алгоритма belt-hash (OID bign-with-hash-belt) для подписи.
@@ -119,5 +117,5 @@ int crypto_pubkey_from_priv(const uint8_t priv[CRYPTO_PRIVKEY_LEN],
     if (!s_params_loaded) {
         return -1;
     }
-    return (bignCalcPubkey(out_pub, &s_params, priv) == ERR_OK) ? 0 : -2;
+    return (bignPubkeyCalc(out_pub, &s_params, priv) == ERR_OK) ? 0 : -2;
 }
