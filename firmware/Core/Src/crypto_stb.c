@@ -9,11 +9,13 @@
 
 #include "bee2/core/err.h"
 #include "bee2/core/mem.h"
-#include "bee2/core/rng.h"
 #include "bee2/crypto/belt.h"
 #include "bee2/crypto/bign.h"
 
 #include <string.h>
+
+/* Реализован в rng_stm32.c: потоковый источник энтропии. */
+extern void stm32_rng_step(void *buf, size_t n, void *state);
 
 /* Идентификатор алгоритма bign-curve256v1 (bign-128). */
 #define CURVE_OID "1.2.112.0.2.0.34.101.45.3.1"
@@ -104,7 +106,7 @@ int crypto_keygen(uint8_t out_priv[CRYPTO_PRIVKEY_LEN],
     /* В bee2 ключевая пара генерируется через bignKeypairGen.
      * RNG передаётся как callback; на STM32 RNG-обёртка использует
      * адаптер прошивки rng_step (см. rng_stm32.c). */
-    if (bignKeypairGen(out_priv, out_pub, &s_params, rngStepR2, NULL) != ERR_OK) {
+    if (bignKeypairGen(out_priv, out_pub, &s_params, stm32_rng_step, NULL) != ERR_OK) {
         return -2;
     }
     return 0;

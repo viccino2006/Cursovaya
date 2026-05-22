@@ -11,6 +11,7 @@
 #include "key_storage.h"
 #include "stm32f1xx_hal.h"
 
+#include <stddef.h>
 #include <string.h>
 
 #define FLASH_KEY_ADDR  0x0801FC00u

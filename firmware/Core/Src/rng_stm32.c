@@ -47,7 +47,7 @@ static void seed_state(void)
 }
 
 /* Извлекает n байт из «расширителя секрета»: state = belt-hash(state || cnt). */
-void rngStepR2(void *buf, size_t n, void *state)
+void stm32_rng_step(void *buf, size_t n, void *state)
 {
     (void)state;
     if (!s_state_inited) seed_state();
