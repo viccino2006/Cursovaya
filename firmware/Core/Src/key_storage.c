@@ -15,7 +15,9 @@
 #include <string.h>
 
 #define FLASH_KEY_ADDR  0x0801FC00u
+#ifndef FLASH_PAGE_SIZE
 #define FLASH_PAGE_SIZE 0x400u   /* 1024 байта */
+#endif
 
 /* CRC-32 (IEEE 802.3) — программно, чтобы не зависеть от настроек HAL_CRC. */
 static uint32_t crc32_calc(const uint8_t *p, size_t n)
