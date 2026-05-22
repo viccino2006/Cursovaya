@@ -19,6 +19,7 @@
 #include "stm32f1xx_hal.h"
 #include "usb_device.h"
 #include "usbd_cdc_if.h"
+#include "adc.h"          /* CubeMX-генерируемый заголовок MX_ADC1_Init */
 #include "crypto_stb.h"
 #include "usb_protocol.h"
 
@@ -76,7 +77,16 @@ int main(void)
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
+    MX_ADC1_Init();
     MX_USB_DEVICE_Init();
+
+    /* Калибровка ADC и включение DWT-счётчика (нужен для rng_stm32). */
+    extern ADC_HandleTypeDef hadc1;
+    HAL_ADCEx_Calibration_Start(&hadc1);
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0;
+    DWT->CTRL  |= DWT_CTRL_CYCCNTENA_Msk;
+
     crypto_init();
 
     for (;;) {
