@@ -27,8 +27,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define RX_RING_SIZE 4096u
-#define TX_BUF_SIZE  2300u
+#define RX_RING_SIZE 1024u   /* USB CDC FS пакеты по 64 байта — 1 КБ кольца с запасом */
+#define TX_BUF_SIZE  2100u   /* HEADER + MAX_PAYLOAD; влезает в 2 КБ */
 
 extern volatile uint8_t  g_rx_buf[RX_RING_SIZE];
 extern volatile uint32_t g_rx_head;   /* куда писать (изменяется в ISR) */
