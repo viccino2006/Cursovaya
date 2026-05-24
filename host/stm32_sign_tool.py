@@ -20,6 +20,7 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
+from belt import pkcs7_pad, pkcs7_unpad
 from belt_hash import belt_hash, belt_hash_file
 from stm32_protocol import (
     BLOCK_LEN,
@@ -316,18 +317,30 @@ class App(tk.Tk):
             messagebox.showerror("Ошибка", "Выберите входной файл")
             return
         data = Path(src_path).read_bytes()
+        orig_len = len(data)
         if encrypt:
-            # дополним нулями до кратности 16 (для демонстрации); для рабочего
-            # сценария используйте PKCS#7 из belt.pkcs7_pad / unpad
-            pad = (BLOCK_LEN - len(data) % BLOCK_LEN) % BLOCK_LEN
-            data = data + b"\x00" * pad
-            out = self.client.encrypt(iv, key, data)
+            # PKCS#7-padding: всегда добавляет 1..16 байт со значением = числу байт
+            # паддинга. При расшифровке будет однозначно снят и восстановлен
+            # исходный файл байт-в-байт (СТБ 34.101.31, без потерь длины).
+            padded = pkcs7_pad(data, BLOCK_LEN)
+            out = self.client.encrypt(iv, key, padded)
+            sent_len = len(padded)
+            recv_len = len(out)
             ext = ".belt"
         else:
-            if len(data) % BLOCK_LEN != 0:
-                messagebox.showerror("Ошибка", "Зашифрованный файл должен быть кратен 16 байтам")
+            if len(data) == 0 or len(data) % BLOCK_LEN != 0:
+                messagebox.showerror("Ошибка", "Зашифрованный файл должен быть ненулевой длины и кратен 16 байтам")
                 return
-            out = self.client.decrypt(iv, key, data)
+            decrypted = self.client.decrypt(iv, key, data)
+            sent_len = len(data)
+            try:
+                out = pkcs7_unpad(decrypted, BLOCK_LEN)
+            except ValueError:
+                messagebox.showerror("Ошибка",
+                                     "Неверный PKCS#7 padding после расшифровки.\n"
+                                     "Проверьте ключ и IV.")
+                return
+            recv_len = len(out)
             ext = ".plain"
 
         dst = filedialog.asksaveasfilename(defaultextension=ext,
@@ -336,7 +349,9 @@ class App(tk.Tk):
         Path(dst).write_bytes(out)
         self.crypt_info.insert(tk.END, f"{'ENCRYPT' if encrypt else 'DECRYPT'} {src_path} → {dst}\n"
                                        f"   key={key.hex()}\n   iv={iv.hex()}\n"
-                                       f"   {len(data)} → {len(out)} байт\n\n")
+                                       f"   исходный файл: {orig_len} байт\n"
+                                       f"   передано на STM32: {sent_len} байт (с PKCS#7)\n"
+                                       f"   результат: {recv_len} байт\n\n")
 
     # ------------------------------------------------------------- Tab: log -
     def _build_tab_log(self) -> None:
