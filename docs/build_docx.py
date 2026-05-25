@@ -22,6 +22,7 @@ HERE = Path(__file__).parent
 CONTENT_DIR = HERE / "content"
 IMG_DIR = HERE / "img"
 OUT_PATH = HERE / "coursework.docx"
+TEMPLATE_PATH = HERE / "template.docx"  # титульник + оглавление от пользователя
 
 # Множитель межстрочного интервала в основном тексте.
 # Методичка: 18 пт точно для шрифта 14 пт; 18/14 ≈ 1.29.
@@ -510,15 +511,51 @@ def build_references(doc: Document) -> None:
         run.font.size = Pt(14)
 
 
+def strip_after_toc(doc: Document) -> None:
+    """Из template.docx удаляет всё после таблицы оглавления.
+
+    Сохраняет: paragraphs 0-30 (титул + слово ОГЛАВЛЕНИЕ) + Table 0 (TOC).
+    Удаляет: введение, главы, заключение, список источников (старый контент шаблона).
+    Финальный <w:sectPr> остаётся на месте — новые абзацы будут вставляться перед ним.
+    """
+    body = doc.element.body
+    children = list(body)
+    # Найти первый <w:tbl> — это таблица оглавления.
+    toc_idx = None
+    for i, ch in enumerate(children):
+        if ch.tag.endswith('}tbl'):
+            toc_idx = i
+            break
+    if toc_idx is None:
+        return
+    # Удаляем всё после оглавления кроме финального <w:sectPr>.
+    for ch in children[toc_idx + 1:]:
+        if ch.tag.endswith('}sectPr'):
+            continue
+        body.remove(ch)
+
+
 # -----------------------------------------------------------------------------
 def main() -> None:
-    doc = Document()
-    configure_page(doc)
-    set_default_font(doc)
-    enable_page_numbers(doc)
+    if TEMPLATE_PATH.exists():
+        doc = Document(str(TEMPLATE_PATH))
+        strip_after_toc(doc)
+        # Шаблон уже содержит правильные поля, шрифт, разделы; не перенастраиваем.
+        # Включаем номера страниц по центру внизу (на случай если в шаблоне нет).
+        try:
+            enable_page_numbers(doc)
+        except Exception:
+            pass
+        # После оглавления вставляем разрыв страницы перед введением.
+        page_break(doc)
+    else:
+        doc = Document()
+        configure_page(doc)
+        set_default_font(doc)
+        enable_page_numbers(doc)
+        build_title_page(doc)
+        build_toc(doc)
 
-    build_title_page(doc)
-    build_toc(doc)
     build_intro(doc)
     build_chapter1(doc)
     build_chapter2(doc)
